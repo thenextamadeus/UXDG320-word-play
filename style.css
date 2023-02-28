@@ -1,0 +1,40 @@
+/* FONTS */
+/*
+
+font-family: 'Fjalla One', sans-serif;
+font-family: 'IBM Plex Mono', monospace;
+font-family: 'Inter', sans-serif;
+font-family: 'Open Sans', sans-serif;
+font-family: 'Roboto', sans-serif;
+font-family: 'Ubuntu Mono', monospace;
+font-family: 'Uncial Antiqua', cursive;
+
+font-family: 'Satoshi', sans-serif;
+font-family: 'Clash Display', sans-serif;
+font-family: 'Boska', serif;
+font-family: 'Stardom', sans-serif;
+font-family: 'Aktura', serif;
+font-family: 'Melodrama', serif;
+font-family: 'Switzer', sans-serif;
+font-family: 'Gambarino', serif;
+font-family: 'Bebas Neue', sans-serif;
+font-family: 'Epilogue', sans-serif;
+
+['Fjalla One'], ['IBM Plex Mono'], ['Inter'], ['Open Sans'], ['Roboto'], ['Ubuntu Mono'], ['Uncial Antiqua'], ['Satoshi'], ['Clash Display'], ['Boska'], ['Stardom'], ['Aktura'], ['Melodrama'], ['Switzer'], ['Gambarino'], ['Bebas Neue'], ['Epilogue']
+'Fjalla One', 'IBM Plex Mono', 'Inter', 'Open Sans', 'Roboto', 'Ubuntu Mono', 'Uncial Antiqua', 'Satoshi', 'Clash Display', 'Boska', 'Stardom', 'Aktura', 'Melodrama', 'Switzer', 'Gambarino', 'Bebas Neue', 'Epilogue'
+
+*/
+
+*/
+
+body {
+    display: block;
+    margin: 0px;
+    padding: 0px;
+}
+
+#canvasContain {
+position: relative;
+width: 100vw;
+height: 100vh;
+}
