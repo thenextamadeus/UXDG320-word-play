@@ -6,8 +6,14 @@ let userInput = "Planet Big, Planet Small.";
 
 let words = [];
 let wordArray = [];
-// Don't be afraid to make some noise, make some friends, and eat some good food. Oh, and learn how to code. It's fun!
-let count = 0;
+
+// mouse Arrays
+let points = [];
+
+let clickCount = 0;
+
+let initX;
+let initY;
 
 function preload() {
     // Split userInput into an array of words
@@ -33,54 +39,92 @@ for (let i = 0; i < typefaceArray.length; i++) {
 }
 
 function draw() {
-    // background(0);
+    background(0);
+    mouseLocation(); 
+    for (let i = 0; i < wordArray.length; i++) {
+        wordArray[i].display();
+    }
     
-    // for (let i = 0; i < wordArray.length; i++) {
-    //     wordArray[i].display(i*70);
-    //     wordArray[i].gravity();
-    // }
+}
+function mousePressed() {
+    // record location of mouse on initial click
+    initX = mouseX;
+    initY = mouseY;
+    console.log(initX, initY);
+}
 
-    // fill(255);
-    // ellipse(20 , 20, 20, 20); 
 
-    // textStyle(BOLD);
-    // textFont(typeface[9]);
-    // textSize(224);
-    // text(userInput, 20, 200);
+function mouseDragged() {
+    // map between initX and initY and mouseX and mouseY to get a scale to map to the text size
+    let textScale = map(0, mouseX, 0, 100);
+    // RETURNING NAN NAN // RETURNING NAN NAN// RETURNING NAN NAN// RETURNING NAN NAN// RETURNING NAN NAN// RETURNING NAN NAN
+    console.log(textScale);
+
+
+    // let textScale = map(points[0].x, mouseX, 0, 100);
+    
+    // wordArray[clickCount].size = textScale;
+    
+    // wordArray[clickCount].place();
+    wordArray[clickCount].display();
+
 }
 
 function mouseReleased() {
-    fill(0);
-
-    wordArray[count].display();
-    count ++;
-    if (count > wordArray.length) {
-        count = 0;
+    wordArray[clickCount].place();
+    wordArray[clickCount].font = typefaceArray[floor(random(0, typefaceArray.length))];
+    // wordArray[clickCount].size = random(18, 500);
+    clickCount++;
+    if (clickCount >= wordArray.length) {
+        clickCount = 0;   
     }
 }
 
-// On Key Pressed, add the key to the userInput string
+function mouseLocation() {
+    var point = {
+        x: mouseX,
+        y: mouseY
+    };
+    points.push(point);
 
-function keyPressed() {
-    if (keyCode === BACKSPACE) {
-        userInput = userInput.substring(0, userInput.length - 1);
-    } else {
-        userInput += key;
-    }
+    if (points.length > 50) {
+        points.splice(0,1);
+      }
 }
+
 
 // create  a class 
 
 class Wordclass {
     constructor(word) {
-        this.word = word;
-        this.x = random(0, windowWidth);
-        this.y = 50;
-
-        /* WORK SPACE WORK SPACE WORK SPACE WORK SPACE WORK SPACE WORK SPACE WORK SPACE WORK SPACE */
-        this.font = typefaceArray[15];
+        this.word = word;        
+        this.font = typefaceArray[floor(random(0, typefaceArray.length))];
+        this.size = 18;
     }
-    display() {
+        place() {
+            // this.x = random(0, windowWidth - this.size*this.word.length);
+            // this.y = random(0 + this.size, windowHeight);
+            this.x = points[points.length-1].x;
+            this.y = points[points.length-1].y;
+        }
+        display() {
+            push();
+            fill(255);
+            textSize(this.size);
+            textFont(this.font);
+            text(this.word, this.x, this.y);
+            pop();
+        }
+
+}
+
+
+/*
+
+// WASTE BIN // WASTE BIN //
+
+
+display() {
         textSize(random(18, 90));
         textFont(this.font);
         text(this.word, this.x, this.y);
@@ -90,5 +134,17 @@ class Wordclass {
     }
     style() {
     }
+
+
+
+On Key Pressed, add the key to the userInput string
+
+function keyPressed() {
+    if (keyCode === BACKSPACE) {
+        userInput = userInput.substring(0, userInput.length - 1);
+    } else {
+        userInput += key;
+    }
 }
 
+*/
