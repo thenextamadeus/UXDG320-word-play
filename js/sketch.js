@@ -19,17 +19,20 @@ let initY;
 let finalX;
 let finalY;
 
+let textScaleX;
+let textScaleY;
+
 let loadedWords = true;
 
-let gamemode = 1;
+let gamemode = 0;
 
 function preload() {
-
 }
 
 
 
 function setup() {
+    rectMode(CENTER);
     let cnv = createCanvas(windowWidth, windowHeight);
     cnv.parent('canvasContain');
 
@@ -47,7 +50,7 @@ function draw() {
     if (gamemode === 0) { //receive input from user and display it
         background('#F5F1EA');
         // Display the userInput
-        text(msg, 10, 10, width - 20, height - 20);
+        text(msg, windowWidth / 2, windowHeight / 2);
     }
 
     if (gamemode === 1) {
@@ -55,6 +58,12 @@ function draw() {
             loadWords();
             loadedWords = !loadedWords;
         }
+        background(0);
+        for (let i = 0; i < clickCount; i++) {
+            wordArray[i].display();
+            console.log(i, "displayed", clickCount);
+        }
+        // wordArray[clickCount].display();
         // mouseLocation();
         // mouseReleased(clickCount);
     }
@@ -67,30 +76,42 @@ function mousePressed() {
     console.log(initX, initY);
     wordArray[clickCount].place(initX, initY);
     console.log(wordArray[clickCount], clickCount, wordArray.length, initX);
-    wordArray[clickCount].display();
+    // wordArray[clickCount].display();
 }
 
 function mouseDragged() {
     // Put dragged mouse location in array
     finalX = mouseX;
     finalY = mouseY;
-    // console.log(finalX, finalY);
+
+    calcScale(initX, initY, finalX, finalY);
+    wordArray[clickCount].size = textScaleX + textScaleY;
+    wordArray[clickCount].display();
+    console.log(finalX, finalY);
 }
 
-function caclScale() {
-    // textScale = 
+function calcScale() {
+    if (finalX - initX < 0) {
+        textScaleX = initX - finalX;
+    }
+    if (finalY - initY < 0) {
+        textScaleY = initY - finalY;
+    }
+    else {
+        textScaleX = finalX - initX;
+        textScaleY = finalY - initY;
+    }
 }
 
 function mouseReleased() {
-    background(0);
     // Put released mouse location in final array
     console.log(initX, initY);
-    wordArray[clickCount].place(initX, initY);
-    wordArray[clickCount].display();
-    clickCount++;
+    // wordArray[clickCount].display();
     if (clickCount >= wordArray.length) {
         clickCount = 0;
     }
+    clickCount++;
+
 }
 
 
@@ -116,7 +137,13 @@ function keyReleased() {
 
 function keyTyped() {
     if (keyCode >= 32) {
-        msg += key;
+        if (gamemode === 0) {
+            msg += key;
+        }
+        if ((gamemode === 1) && (keyCode === 82)) {
+            gamemode = 0;
+            userInput = "";
+        }
     }
 }
 
