@@ -2,7 +2,8 @@ let typefaceArray = ['Fjalla One', 'IBM Plex Mono', 'Inter', 'Open Sans', 'Robot
 
 let typeface = [];
 
-let userInput = "Planet Big, Planet Small.";
+let userInput = "hello two three";
+let msg = "";
 
 let words = [];
 let wordArray = [];
@@ -15,13 +16,15 @@ let clickCount = 0;
 let initX;
 let initY;
 
+let finalX;
+let finalY;
+
+let loadedWords = true;
+
+let gamemode = 1;
+
 function preload() {
-    // Split userInput into an array of words
-    words = split(userInput, ' ');
-    for  (let i = 0; i < words.length; i++) {
-        wordArray[i] = new Wordclass(words[i]);
-        console.log(wordArray[i]);
-    }
+
 }
 
 
@@ -30,30 +33,168 @@ function setup() {
     let cnv = createCanvas(windowWidth, windowHeight);
     cnv.parent('canvasContain');
 
-// Load the fonts into an array (I think this is redundant)
-for (let i = 0; i < typefaceArray.length; i++) {
-    typeface[i] = typefaceArray[i];
-    console.log(typeface[i]);
-}
-    
+    // Load the fonts into an array (I think this is redundant)
+    for (let i = 0; i < typefaceArray.length; i++) {
+        typeface[i] = typefaceArray[i];
+        console.log(typeface[i]);
+    }
+
 }
 
 function draw() {
-    background(0);
-    mouseLocation(); 
-    for (let i = 0; i < wordArray.length; i++) {
-        wordArray[i].display();
+
+
+    if (gamemode === 0) { //receive input from user and display it
+        background('#F5F1EA');
+        // Display the userInput
+        text(msg, 10, 10, width - 20, height - 20);
     }
-    
+
+    if (gamemode === 1) {
+        if (loadedWords) {
+            loadWords();
+            loadedWords = !loadedWords;
+        }
+        // mouseLocation();
+        // mouseReleased(clickCount);
+    }
 }
+
+
 function mousePressed() {
-    // record location of mouse on initial click
+    // Put clicked mouse location in initial array
+    mouseLocation();
+    console.log(initX, initY);
+    wordArray[clickCount].place(initX, initY);
+    console.log(wordArray[clickCount], clickCount, wordArray.length, initX);
+    wordArray[clickCount].display();
+}
+
+function mouseDragged() {
+    // Put dragged mouse location in array
+    finalX = mouseX;
+    finalY = mouseY;
+    // console.log(finalX, finalY);
+}
+
+function caclScale() {
+    // textScale = 
+}
+
+function mouseReleased() {
+    background(0);
+    // Put released mouse location in final array
+    console.log(initX, initY);
+    wordArray[clickCount].place(initX, initY);
+    wordArray[clickCount].display();
+    clickCount++;
+    if (clickCount >= wordArray.length) {
+        clickCount = 0;
+    }
+}
+
+
+
+function mouseLocation() {
     initX = mouseX;
     initY = mouseY;
     console.log(initX, initY);
 }
 
 
+function keyReleased() {
+    if (keyCode == DELETE || keyCode == BACKSPACE) {
+        if (msg.length > 0) {
+            msg = msg.substring(0, msg.length - 1);
+        }
+    }
+    if (keyCode == ENTER) {
+        userInput = msg;
+        gamemode = 1;
+    }
+}
+
+function keyTyped() {
+    if (keyCode >= 32) {
+        msg += key;
+    }
+}
+
+
+
+
+
+function loadWords() {
+    // Split userInput into an array of words
+    words = split(userInput, ' ');
+    for (let i = 0; i < words.length; i++) {
+        wordArray[i] = new Wordclass(words[i]);
+        console.log(wordArray[i]);
+    }
+}
+
+
+// create  a class 
+
+class Wordclass {
+    constructor(word) {
+        this.word = word;
+        this.font = typefaceArray[floor(random(0, typefaceArray.length))];
+        this.size = 18;
+    }
+    place(x, y) {
+        // this.x = random(0, windowWidth - this.size*this.word.length);
+        // this.y = random(0 + this.size, windowHeight);
+        // this.x = points[points.length - 1].x;
+        // this.y = points[points.length - 1].y;
+        this.x = x;
+        this.y = y;
+    }
+    display() {
+        push();
+        fill(255);
+        textSize(this.size);
+        textFont(this.font);
+        text(this.word, this.x, this.y);
+        // text(this.word, 400, 500);
+        pop();
+    }
+
+}
+
+
+
+
+
+
+
+
+/*
+
+// WASTE BIN // WASTE BIN //
+
+
+
+// function mouseReleased(i) {
+//     console.log("base", i, clickCount);
+//     if (gamemode === 1) {
+//         if (i >= wordArray.length) {
+//             clickCount = 0;
+//             console.log("if", clickCount, i);
+//         }
+//         else {
+//             clickCount++;
+//             console.log("else", clickCount, i);
+//         }
+//         wordArray[i].place();
+//         wordArray[i].display();
+//     }
+//     else {
+//         console.log("else", clickCount);
+//     }
+// }
+
+/*
 function mouseDragged() {
     // map between initX and initY and mouseX and mouseY to get a scale to map to the text size
     let textScale = map(0, mouseX, 0, 100);
@@ -62,66 +203,26 @@ function mouseDragged() {
 
 
     // let textScale = map(points[0].x, mouseX, 0, 100);
-    
+
     // wordArray[clickCount].size = textScale;
-    
+
     // wordArray[clickCount].place();
     wordArray[clickCount].display();
 
 }
+*/
 
+/*
 function mouseReleased() {
     wordArray[clickCount].place();
     wordArray[clickCount].font = typefaceArray[floor(random(0, typefaceArray.length))];
     // wordArray[clickCount].size = random(18, 500);
     clickCount++;
     if (clickCount >= wordArray.length) {
-        clickCount = 0;   
+        clickCount = 0;
     }
 }
 
-function mouseLocation() {
-    var point = {
-        x: mouseX,
-        y: mouseY
-    };
-    points.push(point);
-
-    if (points.length > 50) {
-        points.splice(0,1);
-      }
-}
-
-
-// create  a class 
-
-class Wordclass {
-    constructor(word) {
-        this.word = word;        
-        this.font = typefaceArray[floor(random(0, typefaceArray.length))];
-        this.size = 18;
-    }
-        place() {
-            // this.x = random(0, windowWidth - this.size*this.word.length);
-            // this.y = random(0 + this.size, windowHeight);
-            this.x = points[points.length-1].x;
-            this.y = points[points.length-1].y;
-        }
-        display() {
-            push();
-            fill(255);
-            textSize(this.size);
-            textFont(this.font);
-            text(this.word, this.x, this.y);
-            pop();
-        }
-
-}
-
-
-/*
-
-// WASTE BIN // WASTE BIN //
 
 
 display() {
