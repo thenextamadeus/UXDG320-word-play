@@ -29,7 +29,14 @@ let initMessageBoolean = true;
 
 let gamemode = 0;
 
+let img1;
+let img2;
+let img3;
+
 function preload() {
+    img1 = loadImage('Assets/PromptOne.png');
+    img2 = loadImage('Assets/PromptTwo.png');
+    img3 = loadImage('Assets/PromptThree.png');
 }
 
 
@@ -65,9 +72,12 @@ function draw() {
             loadedWords = !loadedWords;
         }
 
-        background(0);
-        circle(initX, initY, 10);
-        circle(finalX, finalY, 10);
+        background('#F5F1EA');
+        // circle(initX, initY, 10);
+        // circle(finalX, finalY, 10);
+        image(img2, 2 * windowWidth / 5 - img3.width / 4, windowHeight - img2.height * 2, img2.width / 2, img2.height / 2);
+        image(img3, 3 * windowWidth / 5 - img3.width / 4, windowHeight - img3.height * 2, img3.width / 2, img3.height / 2);
+
         for (let i = 0; i < clickCount; i++) {
             wordArray[i].display();
             console.log(i, "displayed", clickCount);
@@ -75,6 +85,11 @@ function draw() {
         // wordArray[clickCount].display();
         // mouseLocation();
         // mouseReleased(clickCount);
+    }
+
+    if (gamemode === 2) {
+        saveCanvas(cnv, 'aLetterToYou', 'jpg');
+        gamemode = 0;
     }
 }
 
@@ -84,6 +99,10 @@ function mousePressed() {
         console.log("mouse pressed");
     }
     if (gamemode === 1) {
+
+        if (clickCount >= wordArray.length) {
+            clickCount = 0;
+        }
         // Put clicked mouse location in initial array
         mouseLocation();
         // console.log(initX, initY);
@@ -139,9 +158,7 @@ function mouseReleased() {
         console.log(initX, initY);
 
         // wordArray[clickCount].display();
-        if (clickCount >= wordArray.length) {
-            clickCount = 0;
-        }
+
         clickCount++;
     }
 }
@@ -165,17 +182,23 @@ function keyReleased() {
         userInput = msg;
         gamemode = 1;
     }
+
 }
 
 function keyTyped() {
     if (keyCode >= 32) {
         if (gamemode === 0) {
-
             msg += key;
         }
-        if ((gamemode === 1) && (keyCode === 82)) {
-            gamemode = 0;
-            userInput = "";
+        if (gamemode === 1) {
+            if (keyCode === 27) {
+                gamemode = 0;
+                userInput = "";
+                msg = "";
+            }
+            if (keyCode === 83) {
+                gamemode = 2;
+            }
         }
     }
 }
@@ -193,6 +216,7 @@ function displayMessage() {
         push();
         fill('#000000');
         text(msg, windowWidth / 2 - msg.length * 6, windowHeight / 2);
+        image(img1, windowWidth / 2 - img1.width / 4, windowHeight / 2 + img1.height, img1.width / 2, img1.height / 2);
         pop();
     }
 }
@@ -255,7 +279,7 @@ class Wordclass {
     }
     display() {
         push();
-        fill(255);
+        fill(0);
         textSize(this.size);
         textStyle(this.weight + this.itallics);
         textFont(this.font);
