@@ -1,8 +1,10 @@
-let typefaceArray = ['Fjalla One', 'IBM Plex Mono', 'Inter', 'Open Sans', 'Roboto', 'Ubuntu Mono', 'Uncial Antiqua', 'Satoshi', 'Clash Display', 'Boska', 'Stardom', 'Aktura', 'Melodrama', 'Switzer', 'Gambarino', 'Bebas Neue', 'Epilogue'];
+let typefaceArray = ['Climate Crisis', 'Fjalla One', 'Herr Von Muellerhoff', 'IBM Plex Mono', 'Playfair Display', 'Rubik Iso', 'Spline Sans Mono', 'Uncial Antiqua', 'Pencerio', 'Melodrama', 'Chillax', 'Aktura', 'Boska', 'Epilogue', 'Familjen Grotesk', 'Clash Display', 'Cabinet Grotesk']
+// ['Fjalla One', 'IBM Plex Mono', 'Inter', 'Open Sans', 'Roboto', 'Ubuntu Mono', 'Uncial Antiqua', 'Satoshi', 'Clash Display', 'Boska', 'Stardom', 'Aktura', 'Melodrama', 'Switzer', 'Gambarino', 'Bebas Neue', 'Epilogue'];
 
 let typeface = [];
 
 let userInput = "hello two three";
+let initmessage = "Start typing, then press enter to begin";
 let msg = "";
 
 let words = [];
@@ -23,6 +25,7 @@ let textScaleX;
 let textScaleY;
 
 let loadedWords = true;
+let initMessageBoolean = true;
 
 let gamemode = 0;
 
@@ -50,7 +53,10 @@ function draw() {
     if (gamemode === 0) { //receive input from user and display it
         background('#F5F1EA');
         // Display the userInput
-        text(msg, windowWidth / 2, windowHeight / 2);
+        push();
+        textSize(24);
+        displayMessage();
+        pop();
     }
 
     if (gamemode === 1) {
@@ -58,7 +64,10 @@ function draw() {
             loadWords();
             loadedWords = !loadedWords;
         }
+
         background(0);
+        circle(initX, initY, 10);
+        circle(finalX, finalY, 10);
         for (let i = 0; i < clickCount; i++) {
             wordArray[i].display();
             console.log(i, "displayed", clickCount);
@@ -71,47 +80,70 @@ function draw() {
 
 
 function mousePressed() {
-    // Put clicked mouse location in initial array
-    mouseLocation();
-    console.log(initX, initY);
-    wordArray[clickCount].place(initX, initY);
-    console.log(wordArray[clickCount], clickCount, wordArray.length, initX);
-    // wordArray[clickCount].display();
+    if (gamemode === 0) {
+        console.log("mouse pressed");
+    }
+    if (gamemode === 1) {
+        // Put clicked mouse location in initial array
+        mouseLocation();
+        // console.log(initX, initY);
+        wordArray[clickCount].place(initX, initY);
+    }
 }
 
-function mouseDragged() {
-    // Put dragged mouse location in array
-    finalX = mouseX;
-    finalY = mouseY;
 
-    calcScale(initX, initY, finalX, finalY);
-    wordArray[clickCount].size = textScaleX + textScaleY;
-    wordArray[clickCount].display();
-    console.log(finalX, finalY);
+
+function mouseDragged() {
+    if (gamemode === 0) {
+        console.log("mouse dragged");
+    }
+    if (gamemode === 1) {
+        // Put dragged mouse location in array
+        finalX = mouseX;
+        finalY = mouseY;
+
+        calcScale(initX, initY, finalX, finalY);
+
+        wordArray[clickCount].display();
+        console.log(finalX, finalY);
+    }
 }
 
 function calcScale() {
-    if (finalX - initX < 0) {
-        textScaleX = initX - finalX;
-    }
-    if (finalY - initY < 0) {
-        textScaleY = initY - finalY;
-    }
-    else {
+    if (finalX - initX > 0 && finalY - initY < 0) {
+        wordArray[clickCount].y = initY;
         textScaleX = finalX - initX;
         textScaleY = finalY - initY;
+        console.log("HOE");
     }
+    if (finalY - initY > 0 && finalX - initX > 0) {
+        wordArray[clickCount].y = initY + wordArray[clickCount].size;
+        textScaleX = finalX - initX;
+        textScaleY = finalY - initY;
+        console.log("BITCH");
+    }
+    else {
+
+        // console.log("HEY");
+    }
+    wordArray[clickCount].size = textScaleX + textScaleY;
 }
 
 function mouseReleased() {
-    // Put released mouse location in final array
-    console.log(initX, initY);
-    // wordArray[clickCount].display();
-    if (clickCount >= wordArray.length) {
-        clickCount = 0;
+    if (gamemode === 0) {
+        console.log("mouse released");
     }
-    clickCount++;
 
+    if (gamemode === 1) {
+        // Put released mouse location in final array
+        console.log(initX, initY);
+
+        // wordArray[clickCount].display();
+        if (clickCount >= wordArray.length) {
+            clickCount = 0;
+        }
+        clickCount++;
+    }
 }
 
 
@@ -138,6 +170,7 @@ function keyReleased() {
 function keyTyped() {
     if (keyCode >= 32) {
         if (gamemode === 0) {
+
             msg += key;
         }
         if ((gamemode === 1) && (keyCode === 82)) {
@@ -147,6 +180,22 @@ function keyTyped() {
     }
 }
 
+function displayMessage() {
+    if (msg.length === 0) {
+        push();
+        fill('#CBC4B7');
+        textFont('Boska');
+        textStyle('NORMAL');
+        text(initmessage, windowWidth / 2 - initmessage.length * 5, windowHeight / 2);
+        pop();
+    }
+    else {
+        push();
+        fill('#000000');
+        text(msg, windowWidth / 2 - msg.length * 6, windowHeight / 2);
+        pop();
+    }
+}
 
 
 
@@ -166,7 +215,34 @@ function loadWords() {
 class Wordclass {
     constructor(word) {
         this.word = word;
+
+        // randomize weight in between light, bold, and regular
+        this.weight = random(0, 1);
+        {
+            if (this.weight < 0.33) {
+                this.weight = "LIGHT";
+            }
+            else if (this.weight < 0.66) {
+                this.weight = "REGULAR";
+            }
+            else {
+                this.weight = "BOLD";
+            }
+        }
+
+        this.itallics = random(0, 1);
+        {
+            if (this.itallics < 0.5) {
+                this.itallics = "ITALIC";
+            }
+            else {
+                this.itallics = "";
+            }
+        }
+
+
         this.font = typefaceArray[floor(random(0, typefaceArray.length))];
+
         this.size = 18;
     }
     place(x, y) {
@@ -181,8 +257,10 @@ class Wordclass {
         push();
         fill(255);
         textSize(this.size);
+        textStyle(this.weight + this.itallics);
         textFont(this.font);
         text(this.word, this.x, this.y);
+        console.log(this.font, this.weight, this.itallics, this.size);
         // text(this.word, 400, 500);
         pop();
     }
@@ -190,7 +268,9 @@ class Wordclass {
 }
 
 
-
+function windowResized() {
+    resizeCanvas(windowWidth, windowHeight);
+}
 
 
 
