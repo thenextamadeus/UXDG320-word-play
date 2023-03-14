@@ -186,7 +186,9 @@ function keyReleased() {
         if (keyCode == ESCAPE) {
             console.log("ESC pressed")
             gamemode = 0;
+            msg = "";
             clickCount = 0;
+            loadedWords = true;
         }
         if (keyCode == 83) {
             console.log("enter pressed")
