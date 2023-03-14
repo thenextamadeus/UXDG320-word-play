@@ -26,12 +26,15 @@ let textScaleY;
 
 let loadedWords = true;
 let initMessageBoolean = true;
+let saveBoolean = true;
 
 let gamemode = 0;
 
 let img1;
 let img2;
 let img3;
+
+let cnv;
 
 function preload() {
     img1 = loadImage('Assets/PromptOne.png');
@@ -43,7 +46,7 @@ function preload() {
 
 function setup() {
     rectMode(CENTER);
-    let cnv = createCanvas(windowWidth, windowHeight);
+    cnv = createCanvas(windowWidth, windowHeight);
     cnv.parent('canvasContain');
 
     // Load the fonts into an array (I think this is redundant)
@@ -54,44 +57,35 @@ function setup() {
 
 }
 
-function draw() {
 
+
+function draw() {
 
     if (gamemode === 0) { //receive input from user and display it
         background('#F5F1EA');
         // Display the userInput
-        push();
-        textSize(24);
         displayMessage();
-        pop();
     }
 
     if (gamemode === 1) {
         if (loadedWords) {
             loadWords();
+            background('#F5F1EA');
             loadedWords = !loadedWords;
         }
 
-        background('#F5F1EA');
-        // circle(initX, initY, 10);
-        // circle(finalX, finalY, 10);
-        image(img2, 2 * windowWidth / 5 - img3.width / 4, windowHeight - img2.height * 2, img2.width / 2, img2.height / 2);
-        image(img3, 3 * windowWidth / 5 - img3.width / 4, windowHeight - img3.height * 2, img3.width / 2, img3.height / 2);
+        displayMessage();
 
         for (let i = 0; i < clickCount; i++) {
+            // image(img2, 2 * windowWidth / 5 - img3.width / 4, windowHeight - img2.height * 2, img2.width / 2, img2.height / 2);
+            // image(img3, 3 * windowWidth / 5 - img3.width / 4, windowHeight - img3.height * 2, img3.width / 2, img3.height / 2);
+
             wordArray[i].display();
             console.log(i, "displayed", clickCount);
         }
-        // wordArray[clickCount].display();
-        // mouseLocation();
-        // mouseReleased(clickCount);
-    }
-
-    if (gamemode === 2) {
-        saveCanvas(cnv, 'aLetterToYou', 'jpg');
-        gamemode = 0;
     }
 }
+
 
 
 function mousePressed() {
@@ -99,13 +93,11 @@ function mousePressed() {
         console.log("mouse pressed");
     }
     if (gamemode === 1) {
-
         if (clickCount >= wordArray.length) {
             clickCount = 0;
         }
         // Put clicked mouse location in initial array
         mouseLocation();
-        // console.log(initX, initY);
         wordArray[clickCount].place(initX, initY);
     }
 }
@@ -121,44 +113,47 @@ function mouseDragged() {
         finalX = mouseX;
         finalY = mouseY;
 
+        // Calculate the scale of the text using the initial and final mouse locations
         calcScale(initX, initY, finalX, finalY);
 
+        // Draw the background
+        background('#F5F1EA');
+
+        // Display the wordArray[CURRENT]
         wordArray[clickCount].display();
         console.log(finalX, finalY);
     }
 }
+
+
 
 function calcScale() {
     if (finalX - initX > 0 && finalY - initY < 0) {
         wordArray[clickCount].y = initY;
         textScaleX = finalX - initX;
         textScaleY = finalY - initY;
-        console.log("HOE");
     }
     if (finalY - initY > 0 && finalX - initX > 0) {
         wordArray[clickCount].y = initY + wordArray[clickCount].size;
         textScaleX = finalX - initX;
         textScaleY = finalY - initY;
-        console.log("BITCH");
     }
-    else {
+    else { }
 
-        // console.log("HEY");
-    }
+    // Set the size of the wordArray[CURRENT] to the number calculated in the above if statements
     wordArray[clickCount].size = textScaleX + textScaleY;
 }
+
+
 
 function mouseReleased() {
     if (gamemode === 0) {
         console.log("mouse released");
     }
-
     if (gamemode === 1) {
         // Put released mouse location in final array
         console.log(initX, initY);
-
-        // wordArray[clickCount].display();
-
+        // add a click 
         clickCount++;
     }
 }
@@ -172,17 +167,46 @@ function mouseLocation() {
 }
 
 
+
 function keyReleased() {
-    if (keyCode == DELETE || keyCode == BACKSPACE) {
-        if (msg.length > 0) {
-            msg = msg.substring(0, msg.length - 1);
+    if (gamemode === 0) {
+        if (keyCode == DELETE || keyCode == BACKSPACE) {
+            if (msg.length > 0) {
+                msg = msg.substring(0, msg.length - 1);
+            }
+        }
+        if (keyCode == ENTER) {
+            userInput = msg;
+            background('#F5F1EA');
+            gamemode = 1;
+
         }
     }
-    if (keyCode == ENTER) {
-        userInput = msg;
-        gamemode = 1;
-    }
+    if (gamemode === 1) {
+        if (keyCode == ESCAPE) {
+            console.log("ESC pressed")
+            gamemode = 0;
+            clickCount = 0;
+        }
+        if (keyCode == 83) {
+            console.log("enter pressed")
+            saveCanvas(cnv, 'yourLetter', '.jpg');
+        }
+        if (keyCode == 32) {
+            console.log("r pressed")
+            let temp = true;
+            background('#F5F1EA');
+            if (temp) {
+                for (let i = 0; i < wordArray.length; i++) {
+                    wordArray[i].font = typefaceArray[floor(random(0, typefaceArray.length))];
+                    console.log(wordArray[i].font);
 
+                }
+
+                temp = !temp;
+            }
+        }
+    }
 }
 
 function keyTyped() {
@@ -190,33 +214,46 @@ function keyTyped() {
         if (gamemode === 0) {
             msg += key;
         }
-        if (gamemode === 1) {
-            if (keyCode === 27) {
-                gamemode = 0;
-                userInput = "";
-                msg = "";
-            }
-            if (keyCode === 83) {
-                gamemode = 2;
-            }
-        }
     }
 }
 
 function displayMessage() {
-    if (msg.length === 0) {
-        push();
-        fill('#CBC4B7');
-        textFont('Boska');
-        textStyle('NORMAL');
-        text(initmessage, windowWidth / 2 - initmessage.length * 5, windowHeight / 2);
-        pop();
+    if (gamemode === 0) {
+        if (msg.length === 0) {
+            push();
+            fill('#CBC4B7');
+            textSize(24);
+            textFont('Boska');
+            textStyle('NORMAL');
+            text(initmessage, windowWidth / 2 - initmessage.length * 5, windowHeight / 2);
+            pop();
+        }
+        else {
+            push();
+            fill('#000000');
+            textSize(24);
+            text(msg, windowWidth / 2 - msg.length * 6, windowHeight / 2);
+            pop();
+
+            push();
+            fill('#000000');
+            textSize(12);
+            textFont('IBM Plex Mono');
+            text("Begin [ENTER]", windowWidth / 2 - 8 * 6, windowHeight / 2 + 50);
+            pop();
+            // image(img1, windowWidth / 2 - img1.width / 4, windowHeight / 2 + img1.height, img1.width / 2, img1.height / 2);
+
+        }
     }
-    else {
+    if (gamemode === 1) {
         push();
         fill('#000000');
-        text(msg, windowWidth / 2 - msg.length * 6, windowHeight / 2);
-        image(img1, windowWidth / 2 - img1.width / 4, windowHeight / 2 + img1.height, img1.width / 2, img1.height / 2);
+        textSize(12);
+        textFont('IBM Plex Mono');
+        text('DRAG YOUR MOUSE TO PLACE TEXT', windowWidth / 2 - 50, 50);
+        text('[ESC] Restart', (0.5 * windowWidth) / 6, windowHeight - 50);
+        text('[SPACE] Randomize Fonts', 1 * windowWidth / 6, windowHeight - 50);
+        text('[S] Save', 5 * windowWidth / 6, windowHeight - 50);
         pop();
     }
 }
@@ -274,12 +311,12 @@ class Wordclass {
         // this.y = random(0 + this.size, windowHeight);
         // this.x = points[points.length - 1].x;
         // this.y = points[points.length - 1].y;
+
         this.x = x;
         this.y = y;
     }
     display() {
         push();
-        fill(0);
         textSize(this.size);
         textStyle(this.weight + this.itallics);
         textFont(this.font);
@@ -290,6 +327,8 @@ class Wordclass {
     }
 
 }
+
+
 
 
 function windowResized() {
@@ -303,6 +342,10 @@ function windowResized() {
 /*
 
 // WASTE BIN // WASTE BIN //
+
+typefaceArray[floor(random(0, typefaceArray.length))]
+
+
 
 
 

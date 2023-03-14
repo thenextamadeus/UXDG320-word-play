@@ -1,0 +1,23 @@
+TO DO LIST ----------
+>>>>> Need to do:
+[]  Switch fonts on every drag
+[]  Blinking cursor on gamemode 0
+[]  After clickCount > wordArray.length, switch gamemode to share or recreate
+
+
+>>>>> Possible Features:
+[] Share Feature - vvvvvvvvvv
+[] Save state (previous variations showcase)
+[] Rotate and manipulate after placement
+[] Switch this.font after clickCount > wordArray[].length
+[] Sound?
+[] How can I put this on my website? Leave a message for the next person !!!!!!
+    [] post it on my site
+
+________________________________________________________________________________________________________________________
+________________________________________________________________________________________________________________________
+
+
+COMPLETED ----------
+[X]  Place Background behind words on scale
+[X]  Need CTA on gamemode 1
